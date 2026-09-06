@@ -1,0 +1,81 @@
+---
+title: "R code for Data Science for Beginners"
+subtitle: " Day 4: Individual Exercise"
+author: "Amanda GJ Fontenot Tuk"  #If multiple, 'c("A", "B")'
+date: "2024-9-5"  #r Sys.Date()
+format:
+  pdf: default
+  html: default
+---
+
+# Clean up your workspace 
+```{r}
+rm(list=ls(all=TRUE)) # remove all the named objects visible in the environment 
+cat("\014") # clean your console
+library(tidyverse)
+```
+
+## 1. Let's do more exercises with dplyr (with a different dataset) 
+
+Please download the nycflights13 data by installing this package called `nycflights13`
+
+```{r}
+# install.packages("nycflights13")
+library("nycflights13")
+```
+
+### 1-1: Please find all March flights in the data (the dataset is named "flights") flights
+
+```{r}
+#I was unsure what the table's headers were so I wanted to look 
+#at the data first in the console
+
+data(flights)
+view(flights)
+
+#I wanted to pull a table for month is 3
+march_flights = flights %>% filter(month == 3)
+```
+
+### 1-2 :Create a new variable as date with a format like this 1/1/2013, using the `mutate()` function
+
+```{r}
+flights %>% mutate(FullDate = paste(month, "/", day, "/", year) )
+```
+
+### 1-3: Change column name tailnum to tail_number
+
+```{r}
+flights %>% rename(tail_number = tailnum)
+```
+
+### 1-4: Group flights by their origins
+
+```{r}
+march_flights %>% group_by(origin)
+
+```
+
+### 1-5: Count how many flights departing from JFK on 2013-12-31?
+
+```{r}
+JFKDeparts = flights %>%
+  filter(year == 2013, month == 12, day == 31, origin == "JFK") %>%
+  group_by(origin) %>%
+  summarise(number_of_flights = n())
+
+JFKDeparts[2]
+
+```
+
+### 1-6: Calculate the average hours of delay in departure for all flights from JFK
+
+```{r}
+flights %>%
+  filter(origin == "JFK") %>%
+  summarise(DelayHrs = mean(dep_delay, na.rm = TRUE) / 60)
+```
+
+Finally, execute the entire contents of this file. Make sure that you don't get any error message. If you get an error message, it's probably because you forgot to comment out something. 
+
+
