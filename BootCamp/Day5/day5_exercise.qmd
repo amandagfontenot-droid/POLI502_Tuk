@@ -1,0 +1,128 @@
+---
+title: "R code for Data Science for Beginners"
+subtitle: " Day 5: Individual Exercise"
+author: "Amanda GJ Fontenot Tuk"  #If multiple, 'c("A", "B")'
+date: "2026-9-7"  #r Sys.Date()
+format:
+  pdf: default
+  html: default
+---
+
+# clean up your workspace 
+```{r}
+rm(list=ls(all=TRUE)) # remove all the named objects visible in the environment 
+cat("\014") # clean your console
+```
+
+# Load the data 
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+ world <- read_csv("world.csv")
+```
+
+Remember that Quarto uses a relative path so always save your data in the same folder (or under the same folder) with your Quarto code. 
+
+## Democracy and female representation 
+
+Do democratic countries (`democ_regime == "Yes"`) have better female representation than non-democratic countries? Please answer this question by showing some graphs to assess the relationship between these two variables. 
+
+
+### Initial data clean up
+
+Analyze y
+```{r}
+summary(world $ women09)
+```
+
+Analyze x
+```{r}
+summary(world $ democ_regime)
+```
+
+Note: There are some missing values. Labels are not intuitive. So, we will deal with these two first.
+
+
+### Create a smaller data set that omits NA observations.
+```{r}
+women.dem <- world[ is.na(world $ women09) == FALSE & is.na(world $ democ_regime) == FALSE, ]
+```
+
+Let's make sure that we did this correctly. 
+
+```{r}
+summary(women.dem $ women09)
+summary(women.dem $ democ_regime)
+```
+
+We can see that NA cases have been correctly removed. 
+
+
+### Re-labeling the values
+```{r}
+women.dem $ dem.dum <- factor(women.dem $ democ_regime, 
+                              levels = c("Yes", "No"),
+                              labels = c("Democracy", "Autocracy"))
+```
+
+## Q1: Describe Y (numerically and graphically) 
+
+
+### Numerical summary
+
+```{r}
+summary(women.dem $ women09)
+```
+
+### Graphical summary
+
+```{r}
+g <- ggplot(women.dem, aes(x = women09)) + geom_histogram(bins = 30)
+g <- g + theme(axis.text.x = element_text(size = 14)) # specify text font axis.text.x to 14
+g <- g + xlab("Percentage women in congress") + ylab("Number of countries")
+g
+
+```
+
+## Q2: Describe X (numerically and graphically) 
+
+
+### Numerical summary (frequency table)
+
+```{r}
+table(women.dem $ democ_regime)
+```
+
+### Graphical summary (bar chart)
+
+```{r}
+g2 <- ggplot(women.dem, aes(x = democ_regime)) + geom_bar()
+g2 <- g2 + theme(axis.text.x = element_text(size = 12))
+g2 <- g2 + xlab("Democratic") + ylab("Number of countries")
+g2
+```
+
+## Q3: Describe X-Y graphically
+
+### Histograms
+
+```{r}
+g3 <- ggplot(women.dem, aes(x = women09)) + geom_histogram()
+g3 <- g3 + theme(axis.text.x = element_text(size = 14))
+g3 <- g3 + xlab("Percentage women in congress") + ylab("Number of countries")
+g3 <- g3 + facet_grid(.~ democ_regime)
+g3
+
+```
+
+### Box-plots
+
+```{r}
+g4 <- ggplot(women.dem, aes(y = women09, x = democ_regime)) # Remember that we need to specify both y and x here is aes.
+g4 <- g4 + geom_boxplot()
+g4 <- g4 + theme(axis.text.x = element_text(size = 14))
+g4 <- g4 + xlab("Democratic") + ylab("Percentage women in congress")
+g4
+
+```
